@@ -1,0 +1,56 @@
+{
+  "states" : [
+    {
+      "id" : "apply",
+      "extra" : "applyExtra"
+    },{
+      "id" : "rmAuth",
+      "extra" : "rmAuthExtra"
+    },{
+      "id" : "success",
+      "extra" : "successExtra"
+    },{
+      "id" : "failed",
+      "extra" : "failedExtra"
+    }
+  ],
+  "initialState" : "apply",
+  "actions" : [
+    {
+      "id" : "accept",
+      "extra" : "acceptExtra"
+    },{
+      "id" : "reject",
+      "extra" : "rejectExtra"
+    },{
+      "id" : "timeout",
+      "extra" : "timeoutExtra"
+    },{
+      "id" : "return",
+      "extra" : "returnExtra"
+    }
+  ],
+  "transfers" : [
+    {
+      "src" : "apply",
+      "action" : "accept",
+      "dst" : "rmAuth",
+      "handler" : "submitApplyHandler"
+    },{
+      "src" : "rmAuth",
+      "action" : "accept",
+      "dst" : "success",
+      "handler" : "rmAuthAcceptHandler"
+    },{
+      "src" : "rmAuth",
+      "action" : "reject",
+      "dst" : "failed",
+      "handler" : "rmAuthRejectHandler"
+    },{
+      "src" : "rmAuth",
+      "action" : "timeout",
+      "dst" : "failed",
+      "handler" : "rmAuthTimeoutHandler"
+    }
+  ]
+}
