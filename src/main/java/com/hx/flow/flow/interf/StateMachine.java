@@ -11,7 +11,6 @@ public interface StateMachine<StateType extends State, ActionType extends Action
      * 获取当前状态机对应的状态的初始状态
      *
      * @return the initial state of current state graph
-     * @throws
      * @author 970655147 created at 2017-03-19 16:17
      */
     StateType initialState();
@@ -20,7 +19,6 @@ public interface StateMachine<StateType extends State, ActionType extends Action
      * 获取当前状态是否还有下一个状态
      *
      * @return true if 'now' could transfer to another state
-     * @throws 
      * @author 970655147 created at 2017-03-19 16:18
      */
     boolean hasNextState(StateType now);

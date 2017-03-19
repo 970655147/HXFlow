@@ -9,6 +9,7 @@ import com.hx.flow.flow.interf.*;
  */
 public class StandardTransferContext implements TransferContext<State, Action> {
 
+    private StateMachine<State, Action> stateMachine;
     private FlowTaskFacade<State, Action> task;
     private State srcState;
     private Action action;
@@ -16,14 +17,21 @@ public class StandardTransferContext implements TransferContext<State, Action> {
     private TransferHandler<State, Action> handler;
     private Object extra;
 
-    public StandardTransferContext(FlowTaskFacade<State, Action> task, State srcState, Action action, State dstState,
+    public StandardTransferContext(StateMachine<State, Action> stateMachine, FlowTaskFacade<State, Action> task,
+                                   State srcState, Action action, State dstState,
                                    TransferHandler<State, Action> handler, Object extra) {
+        this.stateMachine = stateMachine;
         this.task = task;
         this.srcState = srcState;
         this.action = action;
         this.dstState = dstState;
         this.handler = handler;
         this.extra = extra;
+    }
+
+    @Override
+    public StateMachine<State, Action> stateMachine() {
+        return stateMachine;
     }
 
     @Override

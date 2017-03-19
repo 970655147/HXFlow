@@ -12,6 +12,9 @@ import com.hx.flow.flow.interf.TransferHandler;
  */
 public class DoNothingTransferHandler implements TransferHandler<State, Action> {
 
+    /**
+     * singleton instance
+     */
     private static TransferHandler<State, Action> INSTANCE;
 
     private DoNothingTransferHandler() {

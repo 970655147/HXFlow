@@ -22,8 +22,7 @@ public interface State<T extends State> {
      *
      * @param id action的id
      * @param extra action的附加信息
-     * @return
-     * @throws
+     * @return an State instance associate 'id'
      * @author 970655147 created at 2017-03-19 18:34
      */
     T create(String id, Object extra);
@@ -50,7 +49,6 @@ public interface State<T extends State> {
      * 获取当前状态的一些附加的信息
      *
      * @return some extra info bind on current state
-     * @throws
      * @author 970655147 created at 2017-03-19 15:05
      */
     Object extra();

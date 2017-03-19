@@ -37,7 +37,6 @@ public class StandardState implements State<StandardState> {
      * @param id    state的id
      * @param extra state的附加属性
      * @return com.hx.flow.flow.StandardState an new instance of StandardState(id, extra)
-     * @throws
      * @author 970655147 created at 2017-03-19 18:08
      */
     public static StandardState getInstance(String id, Object extra) {

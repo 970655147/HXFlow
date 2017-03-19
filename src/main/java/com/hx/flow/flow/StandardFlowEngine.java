@@ -127,7 +127,7 @@ public class StandardFlowEngine implements FlowEngine<State, Action> {
     }
 
     @Override
-    public boolean complete(String taskId, Action action, Object extra) {
+    public boolean complete(String taskId, Action action, Object extra) throws Exception {
         FlowTask<State, Action> task = taskId2Task.get(taskId);
         if (task == null) {
             return false;
@@ -145,7 +145,8 @@ public class StandardFlowEngine implements FlowEngine<State, Action> {
             return false;
         }
 
-        TransferContext<State, Action> context = new StandardTransferContext(taskFacade, srcState, action, dstState, handler, extra);
+        TransferContext<State, Action> context = new StandardTransferContext(stateMachine, taskFacade,
+                srcState, action, dstState, handler, extra);
         boolean handleResult = handler.handle(context);
         task.transfer(dstState);
         return handleResult;

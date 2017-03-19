@@ -11,10 +11,10 @@ public interface TransferHandler<StateType extends State, ActionType extends Act
      * 处理转换的handler
      *
      * @param context 当前转换涉及的上下文
-     * @return return void
+     * @return return true if handle complete, or else
      * @author Jerry.X.He
      * @since 2017/3/15 16:02
      */
-    boolean handle(TransferContext<StateType, ActionType> context);
+    boolean handle(TransferContext<StateType, ActionType> context) throws Exception;
 
 }

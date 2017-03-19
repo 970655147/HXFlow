@@ -19,7 +19,7 @@ import static com.hx.log.util.Log.infoHorizon;
 public class Test02FlowEngine {
 
     @Test
-    public void flowEngine() {
+    public void flowEngine() throws Exception {
 
         StandardAction accept = StandardAction.getInstance("accept", "acceptExtra");
         StandardAction reject = StandardAction.getInstance("reject", "rejectExtra");
@@ -51,7 +51,7 @@ public class Test02FlowEngine {
     }
 
     @Test
-    public void deployByFile() {
+    public void deployByFile() throws Exception {
 
         String flow = "flow01";
         String flowGraphPath = "./src/main/resources/StoreCreate.json";

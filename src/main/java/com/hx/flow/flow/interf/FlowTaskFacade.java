@@ -11,7 +11,6 @@ public interface FlowTaskFacade<StateType extends State, ActionType extends Acti
      * 获取当前任务的id
      *
      * @return return current task's id
-     * @throws
      * @author 970655147 created at 2017-03-19 15:57
      */
     String id();
@@ -20,7 +19,6 @@ public interface FlowTaskFacade<StateType extends State, ActionType extends Acti
      * 获取当前任务的flow
      *
      * @return return current flow
-     * @throws
      * @author 970655147 created at 2017-03-19 15:57
      */
     String flow();
@@ -29,7 +27,6 @@ public interface FlowTaskFacade<StateType extends State, ActionType extends Acti
      * 获取当前任务的状态
      *
      * @return return current state
-     * @throws
      * @author 970655147 created at 2017-03-19 15:58
      */
     StateType now();
