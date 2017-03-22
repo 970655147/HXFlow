@@ -1,5 +1,8 @@
 package com.hx.flow.flow.interf;
 
+import java.util.Collection;
+import java.util.List;
+
 /**
  * file name : StateMachine.java
  * created at : 15:20  2017-03-19
@@ -22,6 +25,14 @@ public interface StateMachine<StateType extends State, ActionType extends Action
      * @author 970655147 created at 2017-03-19 16:18
      */
     boolean hasNextState(StateType now);
+
+    /**
+     * 获取当前状态是否下可以采取的操作
+     *
+     * @return return based on `now`, what actions can be apply
+     * @author 970655147 created at 2017-03-22 22:34
+     */
+    List<ActionType> nextActions(StateType now);
 
     /**
      * 根据当前的状态 以及采取的动作获取下一个状态

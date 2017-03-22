@@ -11,8 +11,6 @@ import java.util.*;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
-import static com.hx.log.util.JSONUtils.checkJSONObj;
-
 /**
  * file name : StandardFlowEngine.java
  * created at : 15:59  2017-03-19
@@ -23,28 +21,49 @@ public class StandardFlowEngine implements FlowEngine<State, Action> {
     /**
      * flow -> statusMachine
      */
-    private Map<String, StateMachine<State, Action>> flow2StatusMachine;
+    private final Map<String, StateMachine<State, Action>> flow2StatusMachine;
     /**
-     * taskId -> flowTask
+     * t正在运行的askId -> flowTask
      */
-    private Map<String, FlowTask<State, Action>> taskId2Task = new HashMap<>();
+    private final Map<String, FlowTask<State, Action>> runningId2Task = new HashMap<>();
+    /**
+     * 已经完成的taskId -> flowTask
+     */
+    private final Map<String, FlowTask<State, Action>> finishedId2Task = new HashMap<>();
     /**
      * 生成taskId的工具
      */
-    private IdxGenerator taskIdGenerator = new IdxGenerator();
+    private TaskIdGenerator taskIdGenerator;
 
     public StandardFlowEngine() {
-        this(new HashMap<String, StateMachine<State, Action>>());
+        this(new HashMap<String, StateMachine<State, Action>>(), new SeqTaskIdGenerator());
     }
 
     public StandardFlowEngine(Map<String, StateMachine<State, Action>> flow2StatusMachine) {
+        this(flow2StatusMachine, new SeqTaskIdGenerator());
+    }
+
+    public StandardFlowEngine(Map<String, StateMachine<State, Action>> flow2StatusMachine, TaskIdGenerator taskIdGenerator) {
         Tools.assert0(flow2StatusMachine != null, "'flow2StatusMachine' can't be null !");
+        Tools.assert0(taskIdGenerator != null, "'taskIdGenerator' can't be null !");
+
         this.flow2StatusMachine = flow2StatusMachine;
+        this.taskIdGenerator = taskIdGenerator;
     }
 
     @Override
     public Set<String> flows() {
-        return flow2StatusMachine.keySet();
+        return extractKeySetFrom(flow2StatusMachine);
+    }
+
+    @Override
+    public Set<String> runningTasks() {
+        return extractKeySetFrom(runningId2Task);
+    }
+
+    @Override
+    public Set<String> finishedTasks() {
+        return extractKeySetFrom(finishedId2Task);
     }
 
     @Override
@@ -59,7 +78,9 @@ public class StandardFlowEngine implements FlowEngine<State, Action> {
             return false;
         }
 
-        flow2StatusMachine.put(flow, stateMachine);
+        synchronized (flow2StatusMachine) {
+            flow2StatusMachine.put(flow, stateMachine);
+        }
         return true;
     }
 
@@ -86,7 +107,7 @@ public class StandardFlowEngine implements FlowEngine<State, Action> {
     public boolean deploy(String flow, String flowGraphPath, State state, Action action,
                           TransferHandlerFactory<State, Action> transferHandlerFactory) {
         File flowGraphFile = new File(flowGraphPath);
-        if((! flowGraphFile.exists()) || (flowGraphFile.isDirectory())) {
+        if ((!flowGraphFile.exists()) || (flowGraphFile.isDirectory())) {
             Log.err("the file : " + flowGraphFile.getAbsolutePath() + " does not exists !");
             return false;
         }
@@ -110,15 +131,24 @@ public class StandardFlowEngine implements FlowEngine<State, Action> {
             return null;
         }
 
-        String taskId = taskId(taskIdGenerator.nextId());
-        FlowTask<State, Action> task = new StandardFlowTask(taskId, flow, stateMachine.initialState());
-        taskId2Task.put(taskId, task);
+        String taskId = taskIdGenerator.nextId();
+        addFlowInstance(flow, taskId, stateMachine.initialState(), false);
         return taskId;
     }
 
     @Override
+    public boolean addFlowInstance(String flow, String taskId, State state) {
+        StateMachine<State, Action> stateMachine = flow2StatusMachine.get(flow);
+        if (stateMachine == null) {
+            return false;
+        }
+
+        return addFlowInstance(flow, taskId, state, true);
+    }
+
+    @Override
     public FlowTaskFacade<State, Action> getTask(String taskId) {
-        FlowTask<State, Action> flowTask = taskId2Task.get(taskId);
+        FlowTask<State, Action> flowTask = runningId2Task.get(taskId);
         if (flowTask == null) {
             return null;
         }
@@ -127,13 +157,22 @@ public class StandardFlowEngine implements FlowEngine<State, Action> {
     }
 
     @Override
+    public StateMachine<State, Action> getStateMachine(String flow) {
+        return flow2StatusMachine.get(flow);
+    }
+
+    @Override
     public boolean complete(String taskId, Action action, Object extra) throws Exception {
-        FlowTask<State, Action> task = taskId2Task.get(taskId);
+        FlowTask<State, Action> task = runningId2Task.get(taskId);
         if (task == null) {
             return false;
         }
         StateMachine<State, Action> stateMachine = flow2StatusMachine.get(task.flow());
         if (stateMachine == null) {
+            return false;
+        }
+        if (stateMachine.hasNextState(task.now())) {
+            transferFinishedTask(task.id(), task);
             return false;
         }
 
@@ -149,18 +188,11 @@ public class StandardFlowEngine implements FlowEngine<State, Action> {
                 srcState, action, dstState, handler, extra);
         boolean handleResult = handler.handle(context);
         task.transfer(dstState);
-        return handleResult;
-    }
+        if (stateMachine.hasNextState(dstState)) {
+            transferFinishedTask(taskId, task);
+        }
 
-    /**
-     * 获取taskId
-     *
-     * @param id 给定的id
-     * @return java.lang.String
-     * @author 970655147 created at 2017-03-19 16:49
-     */
-    private String taskId(int id) {
-        return "task - " + id;
+        return handleResult;
     }
 
     /**
@@ -174,12 +206,12 @@ public class StandardFlowEngine implements FlowEngine<State, Action> {
      */
     private void initStateAndAction(JSONObject flowGraph, State state, Action action) {
         JSONArray states = flowGraph.getJSONArray(HXFlowConstants.STATES);
-        for(int i=0, len=states.size(); i<len; i++) {
+        for (int i = 0, len = states.size(); i < len; i++) {
             JSONObject stateObj = states.getJSONObject(i);
             state.create(stateObj.getString(HXFlowConstants.STATE_ID), stateObj.get(HXFlowConstants.STATE_EXTRA));
         }
         JSONArray actions = flowGraph.getJSONArray(HXFlowConstants.ACTIONS);
-        for(int i=0, len=actions.size(); i<len; i++) {
+        for (int i = 0, len = actions.size(); i < len; i++) {
             JSONObject actionObj = actions.getJSONObject(i);
             action.create(actionObj.getString(HXFlowConstants.ACTION_ID), actionObj.get(HXFlowConstants.ACTION_EXTRA));
         }
@@ -196,7 +228,7 @@ public class StandardFlowEngine implements FlowEngine<State, Action> {
                                                           TransferHandlerFactory<State, Action> transferHandlerFactory) {
         JSONArray transfers = flowGraph.getJSONArray(HXFlowConstants.TRANSFERS);
         StandardStateMachine.TransferMapBuilder builder = StandardStateMachine.TransferMapBuilder.start();
-        for(int i=0, len=transfers.size(); i<len; i++) {
+        for (int i = 0, len = transfers.size(); i < len; i++) {
             JSONObject transferObj = transfers.getJSONObject(i);
             String srcStr = transferObj.getString(HXFlowConstants.TRANSFER_SRC);
             String actionStr = transferObj.getString(HXFlowConstants.TRANSFER_ACTION);
@@ -207,7 +239,7 @@ public class StandardFlowEngine implements FlowEngine<State, Action> {
             State srcStat = state.idOf(srcStr);
             Action actionNow = action.idOf(actionStr);
             State dstStat = state.idOf(dstStr);
-            if((srcStat == null) || (actionNow == null) || (dstStat == null) ) {
+            if ((srcStat == null) || (actionNow == null) || (dstStat == null)) {
                 Log.err("unknown state or action : srcState : " + srcStr + ", action : " + actionStr + ", dstState : " + dstStr);
                 return null;
             }
@@ -216,12 +248,67 @@ public class StandardFlowEngine implements FlowEngine<State, Action> {
 
         String initStatStr = flowGraph.getString(HXFlowConstants.INITIAL_STATE);
         State initStat = state.idOf(initStatStr);
-        if(initStat == null) {
+        if (initStat == null) {
             Log.err("unknown initial state : " + initStatStr);
             return null;
         }
 
         return new StandardStateMachine(initStat, builder.build());
+    }
+
+    /**
+     * 从给定的map中获取对应的keySet
+     *
+     * @param map 给定的map
+     * @return java.util.Set<java.lang.String>
+     * @author 970655147 created at 2017-03-22 20:43
+     */
+    private Set<String> extractKeySetFrom(final Map<String, ?> map) {
+        Set<String> result = new HashSet<>(Tools.estimateMapSize(map.size()));
+        synchronized (map) {
+            for (String flow : map.keySet()) {
+                result.add(flow);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * 将给定的task从running 迁移到finished
+     *
+     * @param taskId task的标志
+     * @param task   给定的task
+     * @return void
+     * @author 970655147 created at 2017-03-22 20:48
+     */
+    private void transferFinishedTask(String taskId, FlowTask<State, Action> task) {
+        synchronized (runningId2Task) {
+            runningId2Task.remove(taskId);
+        }
+        synchronized (finishedId2Task) {
+            finishedId2Task.put(taskId, task);
+        }
+    }
+
+    /**
+     * 向flowEngine中增加一个流程实例
+     *
+     * @param taskId                 给定的任务的id
+     * @param flow                   给定的flow
+     * @param state                  给定的任务的初始状态
+     * @param consumeTaskIdGenerator 是否需要消耗taskIdGenerator
+     * @return boolean return true if add flowInstance success
+     * @author 970655147 created at 2017-03-22 23:39
+     */
+    private boolean addFlowInstance(String flow, String taskId, State state, boolean consumeTaskIdGenerator) {
+        if (consumeTaskIdGenerator) {
+            taskIdGenerator.nextId();
+        }
+        FlowTask<State, Action> task = new StandardFlowTask(taskId, flow, state);
+        synchronized (runningId2Task) {
+            runningId2Task.put(taskId, task);
+        }
+        return true;
     }
 
     /**

@@ -32,6 +32,22 @@ public interface FlowTask<StateType extends State, ActionType extends Action> {
     StateType now();
 
     /**
+     * 配置当前task的extra信息
+     *
+     * @return
+     * @author 970655147 created at 2017-03-23 0:15
+     */
+    void extra(Object extra);
+
+    /**
+     * 获取当前task上面的extra信息
+     *
+     * @return return the extra info binding on this task
+     * @author 970655147 created at 2017-03-23 0:16
+     */
+    Object extra();
+
+    /**
      * 转换当前task的state
      *
      * @return true if transfer success or else

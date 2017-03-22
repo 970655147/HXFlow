@@ -11,9 +11,10 @@ import com.hx.flow.flow.interf.State;
  */
 public class StandardFlowTask implements FlowTask<State, Action> {
 
-    private String id;
-    private String flow;
-    private State state;
+    protected String id;
+    protected String flow;
+    protected State state;
+    protected Object extra;
 
     public StandardFlowTask(String id, String flow, State state) {
         this.id = id;
@@ -34,6 +35,16 @@ public class StandardFlowTask implements FlowTask<State, Action> {
     @Override
     public State now() {
         return state;
+    }
+
+    @Override
+    public void extra(Object extra) {
+        this.extra = extra;
+    }
+
+    @Override
+    public Object extra() {
+        return extra;
     }
 
     @Override

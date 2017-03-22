@@ -34,4 +34,14 @@ public class StandardFlowTaskFacade implements FlowTaskFacade<State, Action> {
     public State now() {
         return flowTask.now();
     }
+
+    @Override
+    public void extra(Object extra) {
+        flowTask.extra(extra);
+    }
+
+    @Override
+    public Object extra() {
+        return flowTask.extra();
+    }
 }

@@ -5,7 +5,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.hx</groupId>
-  <artifactId>HelloFlow</artifactId>
+  <artifactId>HXFlow</artifactId>
   <version>0.0.1</version>
   <packaging>jar</packaging>
 

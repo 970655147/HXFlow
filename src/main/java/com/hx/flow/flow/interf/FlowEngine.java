@@ -13,10 +13,26 @@ public interface FlowEngine<StateType extends State, ActionType extends Action> 
     /**
      * 获取当前engine, 所有flow的名称
      *
-     * @return true if deploy success or else
+     * @return return all flow
      * @author 970655147 created at 2017-03-19 15:50
      */
     Set<String> flows();
+
+    /**
+     * 获取当前engine, 所有正在执行的任务的id
+     *
+     * @return return all running tasks
+     * @author 970655147 created at 2017-03-22 20:36
+     */
+    Set<String> runningTasks();
+
+    /**
+     * 获取当前engine, 所有已经完成的任务的id
+     *
+     * @return return all finished tasks
+     * @author 970655147 created at 2017-03-22 20:36
+     */
+    Set<String> finishedTasks();
 
     /**
      * 部署一个流程
@@ -73,6 +89,24 @@ public interface FlowEngine<StateType extends State, ActionType extends Action> 
      * @author 970655147 created at 2017-03-19 15:53
      */
     String startFlowInstance(String flow);
+
+    /**
+     * 向flowEngine中增加一个流程实例
+     *
+     * @param flow 流程id
+     * @return null if flow does not exists, else return the taskId
+     * @author 970655147 created at 2017-03-19 15:53
+     */
+    boolean addFlowInstance(String flow, String taskId, StateType state);
+
+    /**
+     * 获取给定的流程的状态机
+     *
+     * @param flow 给定的流程的id
+     * @return com.hx.flow.flow.interf.StateMachine<StateType,ActionType> return `StateMachine` corresponding `flow` or else null returned
+     * @author 970655147 created at 2017-03-22 22:38
+     */
+    StateMachine<StateType, ActionType> getStateMachine(String flow);
 
     /**
      * 获取taskId对应的task

@@ -5,8 +5,7 @@ import com.hx.flow.flow.interf.State;
 import com.hx.flow.flow.interf.StateMachine;
 import com.hx.flow.flow.interf.TransferHandler;
 import com.hx.log.util.Tools;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * file name : StandardStateMachine.java
@@ -40,6 +39,20 @@ public class StandardStateMachine implements StateMachine<State, Action> {
     public boolean hasNextState(State now) {
         Map<Action, StateAndHandler> action2Handler = statusAction2Handler.get(now);
         return ((action2Handler == null) || (action2Handler.isEmpty()) );
+    }
+
+    @Override
+    public List<Action> nextActions(State now) {
+        Map<Action, StateAndHandler> action2Handler = statusAction2Handler.get(now);
+        if((action2Handler == null) || (action2Handler.isEmpty()) ) {
+            return Collections.emptyList();
+        }
+
+        List<Action> result = new ArrayList<>(action2Handler.size());
+        for(Action action : action2Handler.keySet()) {
+            result.add(action);
+        }
+        return result;
     }
 
     @Override
