@@ -1,7 +1,11 @@
 package com.hx.flow.test;
 
 import com.hx.flow.flow.*;
+import com.hx.flow.flow.factory.StandardFlowTaskFacadeFactory;
+import com.hx.flow.flow.factory.StandardFlowTaskFactory;
+import com.hx.flow.flow.factory.StandardTransferContextFactory;
 import com.hx.flow.flow.interf.*;
+import com.hx.flow.flow.interf.factory.FlowTaskFacadeFactory;
 import com.hx.flow.flow.interf.factory.TransferHandlerFactory;
 import com.hx.log.util.IdxGenerator;
 import java.util.HashMap;
@@ -25,7 +29,7 @@ public class Test02FlowEngine {
         StandardAction reject = StandardAction.getInstance("reject", "rejectExtra");
         StandardAction timeout = StandardAction.getInstance("timeout", "timeoutExtra");
 
-        StandardStateMachine.TransferMapBuilder builder = StandardStateMachine.TransferMapBuilder.start()
+        StandardStateMachine.TransferMapBuilder<State, Action> builder = StandardStateMachine.TransferMapBuilder.start()
                 .add(StoreCreateState.STATUS_APPLY, accept, StoreCreateState.STATUS_RM_AUTH, new StatusApplyHandler() )
                 .add(StoreCreateState.STATUS_RM_AUTH, accept, StoreCreateState.STATUS_SUCCESS, DoNothingTransferHandler.getInstance())
                 .add(StoreCreateState.STATUS_RM_AUTH, reject, StoreCreateState.STATUS_APPLY, DoNothingTransferHandler.getInstance())
@@ -39,14 +43,14 @@ public class Test02FlowEngine {
         info(succ);
 
         String taskId = flowEngine.startFlowInstance(flow, null, null);
-        info(flowEngine.getTask(taskId).now());
+        info(flowEngine.getTask(taskId, null).now());
 
         infoHorizon();
-        succ = flowEngine.complete(taskId, accept, "extra");
+        succ = flowEngine.complete(taskId, accept, "extra", null);
         infoHorizon();
 
         info(succ);
-        info(flowEngine.getTask(taskId).now());
+        info(flowEngine.getTask(taskId, null).now());
         info(taskId);
     }
 
@@ -57,16 +61,16 @@ public class Test02FlowEngine {
         String flowGraphPath = "./src/main/resources/StoreCreate.json";
 
         FlowEngine<State, Action> flowEngine = new StandardFlowEngine();
-        flowEngine.deploy(flow, flowGraphPath, StandardState.DUMMY, StandardAction.DUMMY, new TransferHandlerFactoryImpl());
+        flowEngine.deploy(flow, flowGraphPath, StandardState.DUMMY, StandardAction.DUMMY, new TransferHandlerFactoryImpl(), null);
 
         info(flowEngine.flows() );
 
         String taskId = flowEngine.startFlowInstance(flow, null, null);
         infoHorizon();
-        flowEngine.complete(taskId, StandardAction.DUMMY.idOf("accept"), "extra");
+        flowEngine.complete(taskId, StandardAction.DUMMY.idOf("accept"), "extra", null);
         infoHorizon();
 
-        info(flowEngine.getTask(taskId).now().id() );
+        info(flowEngine.getTask(taskId, null).now().id() );
 
     }
 
@@ -126,7 +130,7 @@ public class Test02FlowEngine {
 
     private static class TransferHandlerFactoryImpl implements TransferHandlerFactory<State, Action> {
         @Override
-        public TransferHandler<State, Action> create(String handlerId) {
+        public TransferHandler<State, Action> create(String handlerId, Object others) {
             if("submitApplyHandler".equals(handlerId) ) {
                 return new StatusApplyHandler();
             }

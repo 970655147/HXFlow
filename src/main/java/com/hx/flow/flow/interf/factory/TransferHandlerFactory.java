@@ -15,9 +15,10 @@ public interface TransferHandlerFactory<StateType extends State, ActionType exte
      * 根据给定的handlerId创建一个handler
      *
      * @param handlerId handlerId
+     * @param others 任务相关的其他信息
      * @return an instance of TransferHandler corresponding handlerId
      * @author 970655147 created at 2017-03-19 19:23
      */
-    public TransferHandler<StateType, ActionType> create(String handlerId);
+    public TransferHandler<StateType, ActionType> create(String handlerId, Object others);
 
 }

@@ -10,9 +10,9 @@ public interface TaskIdGenerator {
     /**
      * 生成一个taskId
      *
-     * @return
+     * @return return an instance create by params above
      * @author 970655147 created at 2017-03-23 0:35
      */
-    public String nextId();
+    String nextId();
 
 }

@@ -34,7 +34,7 @@ public interface FlowTaskFacade<StateType extends State, ActionType extends Acti
     /**
      * 配置当前task的extra信息
      *
-     * @return
+     * @return extra info binding on this task
      * @author 970655147 created at 2017-03-23 0:15
      */
     void extra(Object extra);

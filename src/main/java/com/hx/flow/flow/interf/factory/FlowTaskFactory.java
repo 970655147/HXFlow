@@ -18,10 +18,10 @@ public interface FlowTaskFactory<StateType extends State, ActionType extends Act
      * @param flow      任务对应的flow
      * @param initState 任务的初始状态
      * @param extra     任务相关的额外信息
-     * @param other     任务相关的其他信息
-     * @return
+     * @param others    任务相关的其他信息
+     * @return return an instance create by params above
      * @author 970655147 created at 2017-03-24 20:24
      */
-    FlowTask<StateType, ActionType> create(String taskId, String flow, StateType initState, Object extra, Object other);
+    FlowTask<StateType, ActionType> create(String taskId, String flow, StateType initState, Object extra, Object others);
 
 }

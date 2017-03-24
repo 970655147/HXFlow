@@ -35,7 +35,6 @@ public interface TransferContext<StateType extends State, ActionType extends Act
      * 获取当前状态转换的action
      *
      * @return return current action
-     * @throws
      * @author 970655147 created at 2017-03-19 15:05
      */
     ActionType action();

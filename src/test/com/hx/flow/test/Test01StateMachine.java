@@ -1,6 +1,7 @@
 package com.hx.flow.test;
 
 import com.hx.flow.flow.DoNothingTransferHandler;
+import com.hx.flow.flow.GenericStateMachine;
 import com.hx.flow.flow.StandardAction;
 import com.hx.flow.flow.StandardStateMachine;
 import com.hx.flow.flow.interf.Action;
@@ -26,7 +27,7 @@ public class Test01StateMachine {
         StandardAction reject = StandardAction.getInstance("reject", "rejectExtra");
         StandardAction timeout = StandardAction.getInstance("timeout", "timeoutExtra");
 
-        StandardStateMachine.TransferMapBuilder builder =
+        GenericStateMachine.TransferMapBuilder<State, Action> builder =
                 StandardStateMachine.TransferMapBuilder.start()
                 .add(StoreCreateState.STATUS_APPLY, accept, StoreCreateState.STATUS_RM_AUTH, DoNothingTransferHandler.getInstance())
                 .add(StoreCreateState.STATUS_RM_AUTH, accept, StoreCreateState.STATUS_SUCCESS, DoNothingTransferHandler.getInstance())

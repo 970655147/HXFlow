@@ -60,64 +60,69 @@ public interface FlowEngine<StateType extends State, ActionType extends Action> 
     /**
      * 部署一个流程
      *
-     * @param flow      流程id
-     * @param flowGraph 流程定义的数据
-     * @param state     state[用于构造State]
-     * @param action    action[用于构造Action]
+     * @param flow                   流程id
+     * @param flowGraph              流程定义的数据
+     * @param state                  state[用于构造State]
+     * @param action                 action[用于构造Action]
+     * @param transferHandlerFactory 构造transferHandler的工具
+     * @param transferHandlerOthers  构造transferHandler需要的额外参数
      * @return true if deploy success or else
      * @author 970655147 created at 2017-03-19 15:50
      */
     boolean deploy(String flow, JSONObject flowGraph, StateType state, ActionType action,
-                   TransferHandlerFactory<StateType, ActionType> transferHandlerFactory);
+                   TransferHandlerFactory<StateType, ActionType> transferHandlerFactory, Object transferHandlerOthers);
 
     /**
      * 部署一个流程
      *
-     * @param flow          流程id
-     * @param flowGraphPath 流程定义的数据的文件的路径
-     * @param state         state[用于构造State]
-     * @param action        action[用于构造Action]
+     * @param flow                   流程id
+     * @param flowGraphPath          流程定义的数据的文件的路径
+     * @param state                  state[用于构造State]
+     * @param action                 action[用于构造Action]
+     * @param transferHandlerFactory 创建TransferHandler的Factory
+     * @param transferHandlerOthers  创建TransferHandler需要的其他信息
      * @return true if deploy success or else
      * @author 970655147 created at 2017-03-19 15:50
      */
     boolean deploy(String flow, String flowGraphPath, StateType state, ActionType action,
-                   TransferHandlerFactory<StateType, ActionType> transferHandlerFactory);
+                   TransferHandlerFactory<StateType, ActionType> transferHandlerFactory, Object transferHandlerOthers);
 
     /**
      * 启动一个流程实例
      *
-     * @param flow   流程id
-     * @param extra  创建task的extra信息
-     * @param others 创建task需要的其他信息
+     * @param flow       流程id
+     * @param extra      创建task的extra信息
+     * @param taskOthers 创建task需要的其他信息
      * @return null if flow does not exists, else return the taskId
      * @author 970655147 created at 2017-03-19 15:53
      */
-    String startFlowInstance(String flow, Object extra, Object others);
+    String startFlowInstance(String flow, Object extra, Object taskOthers);
 
     /**
      * 启动一个流程实例
      *
      * @param flow            流程id
-     * @param flowTaskFactory 创建flowTask的factory
      * @param extra           创建task的extra信息
-     * @param others          创建task需要的其他信息
+     * @param taskOthers      创建task需要的其他信息
+     * @param flowTaskFactory 创建flowTask的factory
      * @return null if flow does not exists, else return the taskId
      * @author 970655147 created at 2017-03-19 15:53
      */
-    String startFlowInstance(String flow, FlowTaskFactory<StateType, ActionType> flowTaskFactory, Object extra, Object others);
+    String startFlowInstance(String flow, Object extra, Object taskOthers,
+                             FlowTaskFactory<StateType, ActionType> flowTaskFactory);
 
     /**
      * 向flowEngine中增加一个流程实例
      *
-     * @param taskId 任务id
-     * @param flow   流程id
-     * @param state  任务的初始状态
-     * @param extra  创建task的extra信息
-     * @param others 创建task需要的其他信息
+     * @param taskId     任务id
+     * @param flow       流程id
+     * @param state      任务的初始状态
+     * @param extra      创建task的extra信息
+     * @param taskOthers 创建task需要的其他信息
      * @return null if flow does not exists, else return the taskId
      * @author 970655147 created at 2017-03-19 15:53
      */
-    boolean addFlowInstance(String taskId, String flow, StateType state, Object extra, Object others);
+    boolean addFlowInstance(String taskId, String flow, StateType state, Object extra, Object taskOthers);
 
     /**
      * 向flowEngine中增加一个流程实例
@@ -125,14 +130,14 @@ public interface FlowEngine<StateType extends State, ActionType extends Action> 
      * @param taskId          任务id
      * @param flow            流程id
      * @param state           任务的初始状态
-     * @param flowTaskFactory 创建flowTask的factory
      * @param extra           创建task的extra信息
-     * @param others          创建task需要的其他信息
+     * @param taskOthers      创建task需要的其他信息
+     * @param flowTaskFactory 创建flowTask的factory
      * @return null if flow does not exists, else return the taskId
      * @author 970655147 created at 2017-03-19 15:53
      */
-    boolean addFlowInstance(String taskId, String flow, StateType state,
-                            FlowTaskFactory<StateType, ActionType> flowTaskFactory, Object extra, Object others);
+    boolean addFlowInstance(String taskId, String flow, StateType state, Object extra, Object taskOthers,
+                            FlowTaskFactory<StateType, ActionType> flowTaskFactory);
 
     /**
      * 获取给定的流程的状态机
@@ -146,22 +151,24 @@ public interface FlowEngine<StateType extends State, ActionType extends Action> 
     /**
      * 获取taskId对应的task
      *
-     * @param taskId 流程实例id
+     * @param taskId           流程实例id
+     * @param taskFacadeOthers 创建task需要的其他信息
      * @return null if the pair of (taskId, task) does not exists or else return the corresponding task
      * @author 970655147 created at 2017-03-19 16:25
      */
-    FlowTaskFacade<StateType, ActionType> getTask(String taskId);
+    FlowTaskFacade<StateType, ActionType> getTask(String taskId, Object taskFacadeOthers);
 
     /**
      * 处理实例的状态切换
      *
-     * @param taskId 流程实例的id
-     * @param action 采取的action
-     * @param extra  额外的信息
+     * @param taskId                             流程实例的id
+     * @param action                             采取的action
+     * @param extra                              额外的信息
+     * @param taskFacadeAndTransferContextOthers 创建taskFacade, transferContext需要的其他信息
      * @return true if 'complete' success or else[have no task, have no action, etc]
      * @throws Exception throw if any Exception happends
      * @author 970655147 created at 2017-03-19 15:55
      */
-    boolean complete(String taskId, ActionType action, Object extra) throws Exception;
+    boolean complete(String taskId, ActionType action, Object extra, Object taskFacadeAndTransferContextOthers) throws Exception;
 
 }

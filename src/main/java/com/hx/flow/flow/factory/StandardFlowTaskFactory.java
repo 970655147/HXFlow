@@ -14,7 +14,7 @@ import com.hx.flow.flow.interf.factory.FlowTaskFactory;
 public class StandardFlowTaskFactory implements FlowTaskFactory<State, Action> {
 
     @Override
-    public FlowTask<State, Action> create(String taskId, String flow, State initState, Object extra, Object other) {
+    public FlowTask<State, Action> create(String taskId, String flow, State initState, Object extra, Object others) {
         return new StandardFlowTask(taskId, flow, initState, extra);
     }
 }
