@@ -1,8 +1,12 @@
 package com.hx.flow.flow;
 
+import com.hx.flow.flow.factory.SeqTaskIdGenerator;
+import com.hx.flow.flow.factory.StandardFlowTaskFactory;
 import com.hx.flow.flow.interf.*;
+import com.hx.flow.flow.interf.factory.FlowTaskFactory;
+import com.hx.flow.flow.interf.factory.TaskIdGenerator;
+import com.hx.flow.flow.interf.factory.TransferHandlerFactory;
 import com.hx.flow.util.HXFlowConstants;
-import com.hx.log.util.IdxGenerator;
 import com.hx.log.util.JSONUtils;
 import com.hx.log.util.Log;
 import com.hx.log.util.Tools;
@@ -17,6 +21,11 @@ import net.sf.json.JSONObject;
  * created by 970655147
  */
 public class StandardFlowEngine implements FlowEngine<State, Action> {
+
+    /**
+     * 默认的taskFactory
+     */
+    private static final FlowTaskFactory<State, Action> DEFAULT_TASK_FACTORY = new StandardFlowTaskFactory();
 
     /**
      * flow -> statusMachine
@@ -125,25 +134,41 @@ public class StandardFlowEngine implements FlowEngine<State, Action> {
     }
 
     @Override
-    public String startFlowInstance(String flow) {
+    public String startFlowInstance(String flow, Object extra, Object others) {
+        return startFlowInstance(flow, DEFAULT_TASK_FACTORY, extra, others);
+    }
+
+    @Override
+    public String startFlowInstance(String flow, FlowTaskFactory<State, Action> flowTaskFactory,
+                                    Object extra, Object others) {
         StateMachine<State, Action> stateMachine = flow2StatusMachine.get(flow);
         if (stateMachine == null) {
             return null;
         }
 
         String taskId = taskIdGenerator.nextId();
-        addFlowInstance(flow, taskId, stateMachine.initialState(), false);
+        FlowTask<State, Action> task = flowTaskFactory.create(taskId, flow, stateMachine.initialState(), extra, others);
+        addFlowInstance(task);
         return taskId;
     }
 
     @Override
-    public boolean addFlowInstance(String flow, String taskId, State state) {
+    public boolean addFlowInstance(String taskId, String flow, State state,
+                                   Object extra, Object others) {
+        return addFlowInstance(taskId, flow, state, DEFAULT_TASK_FACTORY, extra, others);
+    }
+
+
+    @Override
+    public boolean addFlowInstance(String taskId, String flow, State state,
+                                   FlowTaskFactory<State, Action> flowTaskFactory, Object extra, Object others) {
         StateMachine<State, Action> stateMachine = flow2StatusMachine.get(flow);
         if (stateMachine == null) {
             return false;
         }
 
-        return addFlowInstance(flow, taskId, state, true);
+        FlowTask<State, Action> task = flowTaskFactory.create(taskId, flow, stateMachine.initialState(), extra, others);
+        return addFlowInstance(task);
     }
 
     @Override
@@ -293,20 +318,13 @@ public class StandardFlowEngine implements FlowEngine<State, Action> {
     /**
      * 向flowEngine中增加一个流程实例
      *
-     * @param taskId                 给定的任务的id
-     * @param flow                   给定的flow
-     * @param state                  给定的任务的初始状态
-     * @param consumeTaskIdGenerator 是否需要消耗taskIdGenerator
+     * @param task                   给定的任务的需要添加的任务
      * @return boolean return true if add flowInstance success
      * @author 970655147 created at 2017-03-22 23:39
      */
-    private boolean addFlowInstance(String flow, String taskId, State state, boolean consumeTaskIdGenerator) {
-        if (consumeTaskIdGenerator) {
-            taskIdGenerator.nextId();
-        }
-        FlowTask<State, Action> task = new StandardFlowTask(taskId, flow, state);
+    private boolean addFlowInstance(FlowTask<State, Action> task) {
         synchronized (runningId2Task) {
-            runningId2Task.put(taskId, task);
+            runningId2Task.put(task.id(), task);
         }
         return true;
     }

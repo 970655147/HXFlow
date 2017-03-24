@@ -1,5 +1,7 @@
 package com.hx.flow.flow.interf;
 
+import com.hx.flow.flow.interf.factory.FlowTaskFactory;
+import com.hx.flow.flow.interf.factory.TransferHandlerFactory;
 import java.util.Set;
 import net.sf.json.JSONObject;
 
@@ -84,20 +86,53 @@ public interface FlowEngine<StateType extends State, ActionType extends Action> 
     /**
      * 启动一个流程实例
      *
-     * @param flow 流程id
+     * @param flow   流程id
+     * @param extra  创建task的extra信息
+     * @param others 创建task需要的其他信息
      * @return null if flow does not exists, else return the taskId
      * @author 970655147 created at 2017-03-19 15:53
      */
-    String startFlowInstance(String flow);
+    String startFlowInstance(String flow, Object extra, Object others);
+
+    /**
+     * 启动一个流程实例
+     *
+     * @param flow            流程id
+     * @param flowTaskFactory 创建flowTask的factory
+     * @param extra           创建task的extra信息
+     * @param others          创建task需要的其他信息
+     * @return null if flow does not exists, else return the taskId
+     * @author 970655147 created at 2017-03-19 15:53
+     */
+    String startFlowInstance(String flow, FlowTaskFactory<StateType, ActionType> flowTaskFactory, Object extra, Object others);
 
     /**
      * 向flowEngine中增加一个流程实例
      *
-     * @param flow 流程id
+     * @param taskId 任务id
+     * @param flow   流程id
+     * @param state  任务的初始状态
+     * @param extra  创建task的extra信息
+     * @param others 创建task需要的其他信息
      * @return null if flow does not exists, else return the taskId
      * @author 970655147 created at 2017-03-19 15:53
      */
-    boolean addFlowInstance(String flow, String taskId, StateType state);
+    boolean addFlowInstance(String taskId, String flow, StateType state, Object extra, Object others);
+
+    /**
+     * 向flowEngine中增加一个流程实例
+     *
+     * @param taskId          任务id
+     * @param flow            流程id
+     * @param state           任务的初始状态
+     * @param flowTaskFactory 创建flowTask的factory
+     * @param extra           创建task的extra信息
+     * @param others          创建task需要的其他信息
+     * @return null if flow does not exists, else return the taskId
+     * @author 970655147 created at 2017-03-19 15:53
+     */
+    boolean addFlowInstance(String taskId, String flow, StateType state,
+                            FlowTaskFactory<StateType, ActionType> flowTaskFactory, Object extra, Object others);
 
     /**
      * 获取给定的流程的状态机

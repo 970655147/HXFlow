@@ -1,4 +1,4 @@
-package com.hx.flow.flow.interf;
+package com.hx.flow.flow.interf.factory;
 
 /**
  * file name : TaskIdGenerator.java

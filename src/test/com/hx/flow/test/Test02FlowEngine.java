@@ -2,10 +2,10 @@ package com.hx.flow.test;
 
 import com.hx.flow.flow.*;
 import com.hx.flow.flow.interf.*;
+import com.hx.flow.flow.interf.factory.TransferHandlerFactory;
 import com.hx.log.util.IdxGenerator;
 import java.util.HashMap;
 import java.util.Map;
-import net.sf.json.JSONObject;
 import org.junit.Test;
 
 import static com.hx.log.util.Log.info;
@@ -38,7 +38,7 @@ public class Test02FlowEngine {
         boolean succ = flowEngine.deploy(flow, machine);
         info(succ);
 
-        String taskId = flowEngine.startFlowInstance(flow);
+        String taskId = flowEngine.startFlowInstance(flow, null, null);
         info(flowEngine.getTask(taskId).now());
 
         infoHorizon();
@@ -61,7 +61,7 @@ public class Test02FlowEngine {
 
         info(flowEngine.flows() );
 
-        String taskId = flowEngine.startFlowInstance(flow);
+        String taskId = flowEngine.startFlowInstance(flow, null, null);
         infoHorizon();
         flowEngine.complete(taskId, StandardAction.DUMMY.idOf("accept"), "extra");
         infoHorizon();

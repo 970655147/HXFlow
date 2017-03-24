@@ -1,6 +1,6 @@
-package com.hx.flow.flow;
+package com.hx.flow.flow.factory;
 
-import com.hx.flow.flow.interf.TaskIdGenerator;
+import com.hx.flow.flow.interf.factory.TaskIdGenerator;
 import com.hx.log.util.IdxGenerator;
 
 /**

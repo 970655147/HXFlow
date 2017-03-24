@@ -16,10 +16,11 @@ public class StandardFlowTask implements FlowTask<State, Action> {
     protected State state;
     protected Object extra;
 
-    public StandardFlowTask(String id, String flow, State state) {
+    public StandardFlowTask(String id, String flow, State state, Object extra) {
         this.id = id;
         this.flow = flow;
         this.state = state;
+        this.extra = extra;
     }
 
     @Override
