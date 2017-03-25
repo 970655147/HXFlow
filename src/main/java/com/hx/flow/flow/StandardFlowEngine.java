@@ -26,14 +26,14 @@ public class StandardFlowEngine extends GenericFlowEngine<State, Action> {
         this(new HashMap<String, StateMachine<State, Action>>());
     }
 
-    public StandardFlowEngine(Map<String, StateMachine<State, Action>> flow2StatusMachine) {
-        this(flow2StatusMachine, new SeqTaskIdGenerator());
+    public StandardFlowEngine(Map<String, StateMachine<State, Action>> flow2StateMachine) {
+        this(flow2StateMachine, new SeqTaskIdGenerator());
     }
 
-    public StandardFlowEngine(Map<String, StateMachine<State, Action>> flow2StatusMachine,
+    public StandardFlowEngine(Map<String, StateMachine<State, Action>> flow2StateMachine,
                               TaskIdGenerator taskIdGenerator) {
         super(new StandardFlowTaskFactory(), new StandardFlowTaskFacadeFactory(), new StandardTransferContextFactory(),
-                flow2StatusMachine, taskIdGenerator);
+                flow2StateMachine, taskIdGenerator);
     }
 
     public StandardFlowEngine(FlowTaskFactory<State, Action> taskFactory,
@@ -45,16 +45,16 @@ public class StandardFlowEngine extends GenericFlowEngine<State, Action> {
     public StandardFlowEngine(FlowTaskFactory<State, Action> taskFactory,
                               FlowTaskFacadeFactory<State, Action> taskFacadeFactory,
                               TransferContextFactory<State, Action> transferContextFactory,
-                              Map<String, StateMachine<State, Action>> flow2StatusMachine) {
-        super(taskFactory, taskFacadeFactory, transferContextFactory, flow2StatusMachine);
+                              Map<String, StateMachine<State, Action>> flow2StateMachine) {
+        super(taskFactory, taskFacadeFactory, transferContextFactory, flow2StateMachine);
     }
 
     public StandardFlowEngine(FlowTaskFactory<State, Action> taskFactory,
                               FlowTaskFacadeFactory<State, Action> taskFacadeFactory,
                               TransferContextFactory<State, Action> transferContextFactory,
-                              Map<String, StateMachine<State, Action>> flow2StatusMachine,
+                              Map<String, StateMachine<State, Action>> flow2StateMachine,
                               TaskIdGenerator taskIdGenerator) {
-        super(taskFactory, taskFacadeFactory, transferContextFactory, flow2StatusMachine, taskIdGenerator);
+        super(taskFactory, taskFacadeFactory, transferContextFactory, flow2StateMachine, taskIdGenerator);
     }
 
 }

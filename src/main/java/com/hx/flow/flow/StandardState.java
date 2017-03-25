@@ -61,7 +61,7 @@ public class StandardState implements State<StandardState> {
     }
 
     @Override
-    public StandardState status() {
+    public StandardState state() {
         return this;
     }
 

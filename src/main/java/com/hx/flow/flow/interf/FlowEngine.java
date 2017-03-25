@@ -37,6 +37,25 @@ public interface FlowEngine<StateType extends State, ActionType extends Action> 
     Set<String> finishedTasks();
 
     /**
+     * 获取给定的流程的状态机
+     *
+     * @param flow 给定的流程的id
+     * @return com.hx.flow.flow.interf.StateMachine<StateType,ActionType> return `StateMachine` corresponding `flow` or else null returned
+     * @author 970655147 created at 2017-03-22 22:38
+     */
+    StateMachine<StateType, ActionType> getStateMachine(String flow);
+
+    /**
+     * 获取taskId对应的task
+     *
+     * @param taskId           流程实例id
+     * @param taskFacadeOthers 创建task需要的其他信息
+     * @return null if the pair of (taskId, task) does not exists or else return the corresponding task
+     * @author 970655147 created at 2017-03-19 16:25
+     */
+    FlowTaskFacade<StateType, ActionType> getTask(String taskId, Object taskFacadeOthers);
+
+    /**
      * 部署一个流程
      *
      * @param flow         流程id
@@ -138,25 +157,6 @@ public interface FlowEngine<StateType extends State, ActionType extends Action> 
      */
     boolean addFlowInstance(String taskId, String flow, StateType state, Object extra, Object taskOthers,
                             FlowTaskFactory<StateType, ActionType> flowTaskFactory);
-
-    /**
-     * 获取给定的流程的状态机
-     *
-     * @param flow 给定的流程的id
-     * @return com.hx.flow.flow.interf.StateMachine<StateType,ActionType> return `StateMachine` corresponding `flow` or else null returned
-     * @author 970655147 created at 2017-03-22 22:38
-     */
-    StateMachine<StateType, ActionType> getStateMachine(String flow);
-
-    /**
-     * 获取taskId对应的task
-     *
-     * @param taskId           流程实例id
-     * @param taskFacadeOthers 创建task需要的其他信息
-     * @return null if the pair of (taskId, task) does not exists or else return the corresponding task
-     * @author 970655147 created at 2017-03-19 16:25
-     */
-    FlowTaskFacade<StateType, ActionType> getTask(String taskId, Object taskFacadeOthers);
 
     /**
      * 处理实例的状态切换

@@ -73,7 +73,7 @@ public class Test01StateMachine {
         }
 
         @Override
-        public StoreCreateState status() {
+        public StoreCreateState state() {
             return this;
         }
 

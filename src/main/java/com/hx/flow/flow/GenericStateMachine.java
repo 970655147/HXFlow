@@ -20,15 +20,15 @@ public class GenericStateMachine<StateType extends State, ActionType extends Act
      */
     private StateType initialState;
     /**
-     * (status, action) -> [resultStatus, transferHandler]
+     * (state, action) -> [resultState, transferHandler]
      */
-    private Map<StateType, Map<ActionType, StateAndHandler<StateType, ActionType>>> statusAction2Handler;
+    private Map<StateType, Map<ActionType, StateAndHandler<StateType, ActionType>>> stateAction2Handler;
 
     public GenericStateMachine(StateType initialState,
-                                Map<StateType, Map<ActionType, StateAndHandler<StateType, ActionType>>> statusAction2Handler) {
-        Tools.assert0(statusAction2Handler != null, "'statusAction2Handler' can't be null !");
+                                Map<StateType, Map<ActionType, StateAndHandler<StateType, ActionType>>> stateAction2Handler) {
+        Tools.assert0(stateAction2Handler != null, "'stateAction2Handler' can't be null !");
         this.initialState = initialState;
-        this.statusAction2Handler = statusAction2Handler;
+        this.stateAction2Handler = stateAction2Handler;
     }
 
     @Override
@@ -38,13 +38,13 @@ public class GenericStateMachine<StateType extends State, ActionType extends Act
 
     @Override
     public boolean hasNextState(StateType now) {
-        Map<ActionType, StateAndHandler<StateType, ActionType>> action2Handler = statusAction2Handler.get(now);
+        Map<ActionType, StateAndHandler<StateType, ActionType>> action2Handler = stateAction2Handler.get(now);
         return ((action2Handler == null) || (action2Handler.isEmpty()) );
     }
 
     @Override
     public List<ActionType> nextActions(StateType now) {
-        Map<ActionType, StateAndHandler<StateType, ActionType>> action2Handler = statusAction2Handler.get(now);
+        Map<ActionType, StateAndHandler<StateType, ActionType>> action2Handler = stateAction2Handler.get(now);
         if((action2Handler == null) || (action2Handler.isEmpty()) ) {
             return Collections.emptyList();
         }
@@ -58,13 +58,13 @@ public class GenericStateMachine<StateType extends State, ActionType extends Act
 
     @Override
     public StateType getState(StateType now, ActionType action) {
-        StateAndHandler<StateType, ActionType> pair = getPairByStatusAndAction(now, action);
-        return (pair == null) ? null : pair.status;
+        StateAndHandler<StateType, ActionType> pair = getPairByStateAndAction(now, action);
+        return (pair == null) ? null : pair.state;
     }
 
     @Override
     public TransferHandler<StateType, ActionType> getHandler(StateType now, ActionType action) {
-        StateAndHandler<StateType, ActionType> pair = getPairByStatusAndAction(now, action);
+        StateAndHandler<StateType, ActionType> pair = getPairByStateAndAction(now, action);
         return (pair == null) ? null : pair.handler;
     }
 
@@ -74,12 +74,12 @@ public class GenericStateMachine<StateType extends State, ActionType extends Act
      *
      * @param now    当前状态
      * @param action 当前状态采取的action
-     * @return com.hx.test03.Test07StateMachine.StatusMachineImpl.StateAndHandler
+     * @return StateAndHandler
      * @author Jerry.X.He
      * @since 2017/3/15 16:28
      */
-    private StateAndHandler<StateType, ActionType> getPairByStatusAndAction(StateType now, ActionType action) {
-        Map<ActionType, StateAndHandler<StateType, ActionType>> action2Handler = statusAction2Handler.get(now);
+    private StateAndHandler<StateType, ActionType> getPairByStateAndAction(StateType now, ActionType action) {
+        Map<ActionType, StateAndHandler<StateType, ActionType>> action2Handler = stateAction2Handler.get(now);
         if (action2Handler == null) {
             return null;
         }
@@ -92,14 +92,14 @@ public class GenericStateMachine<StateType extends State, ActionType extends Act
     }
 
     /**
-     * status & handler
+     * state & handler
      */
     static class StateAndHandler<StateType extends State, ActionType extends Action> {
-        StateType status;
+        StateType state;
         TransferHandler<StateType, ActionType> handler;
 
-        StateAndHandler(StateType status, TransferHandler<StateType, ActionType> handler) {
-            this.status = status;
+        StateAndHandler(StateType state, TransferHandler<StateType, ActionType> handler) {
+            this.state = state;
             this.handler = handler;
         }
     }
@@ -112,33 +112,33 @@ public class GenericStateMachine<StateType extends State, ActionType extends Act
      */
     public static class TransferMapBuilder<StateType extends State, ActionType extends Action> {
 
-        private Map<StateType, Map<ActionType, StateAndHandler<StateType, ActionType>>> statusAction2Handler;
+        private Map<StateType, Map<ActionType, StateAndHandler<StateType, ActionType>>> stateAction2Handler;
 
         protected TransferMapBuilder() {
-            statusAction2Handler = new HashMap<>();
+            stateAction2Handler = new HashMap<>();
         }
 
         public static <StateType extends State, ActionType extends Action> TransferMapBuilder<StateType, ActionType> start() {
             return new TransferMapBuilder<>();
         }
 
-        public TransferMapBuilder<StateType, ActionType> add(StateType now, ActionType action, StateType resultStatus, TransferHandler<StateType, ActionType> handler) {
-            if (statusAction2Handler == null) {
-                statusAction2Handler = new HashMap<>();
+        public TransferMapBuilder<StateType, ActionType> add(StateType now, ActionType action, StateType resultState, TransferHandler<StateType, ActionType> handler) {
+            if (stateAction2Handler == null) {
+                stateAction2Handler = new HashMap<>();
             }
 
-            Map<ActionType, StateAndHandler<StateType, ActionType>> action2Handler = statusAction2Handler.get(now);
+            Map<ActionType, StateAndHandler<StateType, ActionType>> action2Handler = stateAction2Handler.get(now);
             if (action2Handler == null) {
                 action2Handler = new HashMap<>();
-                statusAction2Handler.put(now, action2Handler);
+                stateAction2Handler.put(now, action2Handler);
             }
 
-            action2Handler.put(action, new StateAndHandler<>(resultStatus, handler));
+            action2Handler.put(action, new StateAndHandler<>(resultState, handler));
             return this;
         }
 
         public Map<StateType, Map<ActionType, StateAndHandler<StateType, ActionType>>> build() {
-            return statusAction2Handler;
+            return stateAction2Handler;
         }
     }
 

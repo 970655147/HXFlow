@@ -103,7 +103,7 @@ public class Test02FlowEngine {
         }
 
         @Override
-        public StoreCreateState status() {
+        public StoreCreateState state() {
             return this;
         }
 

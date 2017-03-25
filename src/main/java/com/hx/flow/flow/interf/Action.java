@@ -11,7 +11,7 @@ public interface Action<T extends Action> {
     /**
      * 获取当前的action的id
      *
-     * @return StatusType return current action's id
+     * @return T return current action's id
      * @author Jerry.X.He
      * @since 2017/3/15 16:02
      */
@@ -22,7 +22,7 @@ public interface Action<T extends Action> {
      *
      * @param id action的id
      * @param extra action的附加信息
-     * @return an State instance associate 'id'
+     * @return T an State instance associate 'id'
      * @author 970655147 created at 2017-03-19 18:34
      */
     T create(String id, Object extra);
@@ -30,7 +30,7 @@ public interface Action<T extends Action> {
     /**
      * 获取id对应的action
      *
-     * @return StatusType return null if no (id, action) pair, or return corresponding action
+     * @return T return null if no (id, action) pair, or return corresponding action
      * @author Jerry.X.He
      * @since 2017/3/15 16:02
      */
@@ -39,7 +39,7 @@ public interface Action<T extends Action> {
     /**
      * 获取当前的action
      *
-     * @return StatusType return current actionObject
+     * @return T return current actionObject
      * @author Jerry.X.He
      * @since 2017/3/15 16:02
      */
@@ -48,7 +48,7 @@ public interface Action<T extends Action> {
     /**
      * 获取当前action的一些附加的信息
      *
-     * @return some extra info bind on current action
+     * @return java.lang.Object some extra info bind on current action
      * @author 970655147 created at 2017-03-19 15:05
      */
     Object extra();

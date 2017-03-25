@@ -32,6 +32,7 @@ public class GenericFlowEngine<StateType extends State, ActionType extends Actio
      * 已经完成的taskId -> flowTask
      */
     private final Map<String, FlowTask<StateType, ActionType>> finishedId2Task = new HashMap<>();
+
     /**
      * 生成taskId的工具
      */
@@ -58,25 +59,25 @@ public class GenericFlowEngine<StateType extends State, ActionType extends Actio
     public GenericFlowEngine(FlowTaskFactory<StateType, ActionType> taskFactory,
                              FlowTaskFacadeFactory<StateType, ActionType> taskFacadeFactory,
                              TransferContextFactory<StateType, ActionType> transferContextFactory,
-                             Map<String, StateMachine<StateType, ActionType>> flow2StatusMachine) {
-        this(taskFactory, taskFacadeFactory, transferContextFactory, flow2StatusMachine, new SeqTaskIdGenerator());
+                             Map<String, StateMachine<StateType, ActionType>> flow2StateMachine) {
+        this(taskFactory, taskFacadeFactory, transferContextFactory, flow2StateMachine, new SeqTaskIdGenerator());
     }
 
     public GenericFlowEngine(FlowTaskFactory<StateType, ActionType> taskFactory,
                              FlowTaskFacadeFactory<StateType, ActionType> taskFacadeFactory,
                              TransferContextFactory<StateType, ActionType> transferContextFactory,
-                             Map<String, StateMachine<StateType, ActionType>> flow2StatusMachine,
+                             Map<String, StateMachine<StateType, ActionType>> flow2StateMachine,
                              TaskIdGenerator taskIdGenerator) {
         Tools.assert0(taskFactory != null, "'taskFactory' can't be null !");
         Tools.assert0(taskFacadeFactory != null, "'taskFacadeFactory' can't be null !");
         Tools.assert0(transferContextFactory != null, "'transferContextFactory' can't be null !");
-        Tools.assert0(flow2StatusMachine != null, "'flow2StatusMachine' can't be null !");
+        Tools.assert0(flow2StateMachine != null, "'flow2StatusMachine' can't be null !");
         Tools.assert0(taskIdGenerator != null, "'taskIdGenerator' can't be null !");
 
         this.taskFactory = taskFactory;
         this.taskFacadeFactory = taskFacadeFactory;
         this.transferContextFactory = transferContextFactory;
-        this.flow2StatusMachine = flow2StatusMachine;
+        this.flow2StatusMachine = flow2StateMachine;
         this.taskIdGenerator = taskIdGenerator;
     }
 
@@ -93,6 +94,21 @@ public class GenericFlowEngine<StateType extends State, ActionType extends Actio
     @Override
     public Set<String> finishedTasks() {
         return extractKeySetFrom(finishedId2Task);
+    }
+
+    @Override
+    public StateMachine<StateType, ActionType> getStateMachine(String flow) {
+        return flow2StatusMachine.get(flow);
+    }
+
+    @Override
+    public FlowTaskFacade<StateType, ActionType> getTask(String taskId, Object taskFacadeOthers) {
+        FlowTask<StateType, ActionType> task = runningId2Task.get(taskId);
+        if (task == null) {
+            return null;
+        }
+
+        return taskFacadeFactory.create(task, taskFacadeOthers);
     }
 
     @Override
@@ -188,23 +204,8 @@ public class GenericFlowEngine<StateType extends State, ActionType extends Actio
             return false;
         }
 
-        FlowTask<StateType, ActionType> task = flowTaskFactory.create(taskId, flow, stateMachine.initialState(), extra, taskOthers);
+        FlowTask<StateType, ActionType> task = flowTaskFactory.create(taskId, flow, state, extra, taskOthers);
         return addFlowInstance(task);
-    }
-
-    @Override
-    public FlowTaskFacade<StateType, ActionType> getTask(String taskId, Object taskFacadeOthers) {
-        FlowTask<StateType, ActionType> task = runningId2Task.get(taskId);
-        if (task == null) {
-            return null;
-        }
-
-        return taskFacadeFactory.create(task, taskFacadeOthers);
-    }
-
-    @Override
-    public StateMachine<StateType, ActionType> getStateMachine(String flow) {
-        return flow2StatusMachine.get(flow);
     }
 
     @Override

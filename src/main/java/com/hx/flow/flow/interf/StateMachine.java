@@ -40,7 +40,7 @@ public interface StateMachine<StateType extends State, ActionType extends Action
      *
      * @param now    当前状态
      * @param action 当前状态采取的action
-     * @return StateType return result status while 'now' invoke 'action'
+     * @return StateType return result state while 'now' invoke 'action'
      * @author Jerry.X.He
      * @since 2017/3/15 16:01
      */
