@@ -118,6 +118,9 @@ public class GenericFlowEngine<StateType extends State, ActionType extends Actio
 
     @Override
     public boolean deploy(String flow, StateMachine<StateType, ActionType> stateMachine, boolean force) {
+        Tools.assert0(flow != null, "'flow' can't be null !");
+        Tools.assert0(stateMachine != null, "'stateMachine' can't be null !");
+
         StateMachine<StateType, ActionType> oldStateMachine = flow2StatusMachine.get(flow);
         if ((oldStateMachine != null) && (!force)) {
             return false;
@@ -135,6 +138,7 @@ public class GenericFlowEngine<StateType extends State, ActionType extends Actio
         Tools.assert0(flowGraph != null, "'flowGraph' can't be null !");
         Tools.assert0(state != null, "'state' can't be null !");
         Tools.assert0(action != null, "'action' can't be null !");
+        Tools.assert0(transferHandlerFactory != null, "'transferHandlerFactory' can't be null !");
 
         Collection<String> requiredAttrs = Arrays.asList(HXFlowConstants.ACTIONS, HXFlowConstants.ACTIONS,
                 HXFlowConstants.INITIAL_STATE, HXFlowConstants.TRANSFERS);
@@ -178,6 +182,9 @@ public class GenericFlowEngine<StateType extends State, ActionType extends Actio
     @Override
     public String startFlowInstance(String flow, Object extra, Object taskOthers,
                                     FlowTaskFactory<StateType, ActionType> flowTaskFactory) {
+        Tools.assert0(flow != null, "'flow' can't be null !");
+        Tools.assert0(flowTaskFactory != null, "'flowTaskFactory' can't be null !");
+
         StateMachine<StateType, ActionType> stateMachine = flow2StatusMachine.get(flow);
         if (stateMachine == null) {
             return null;
@@ -199,6 +206,11 @@ public class GenericFlowEngine<StateType extends State, ActionType extends Actio
     @Override
     public boolean addFlowInstance(String taskId, String flow, StateType state, Object extra, Object taskOthers,
                                    FlowTaskFactory<StateType, ActionType> flowTaskFactory) {
+        Tools.assert0(taskId != null, "'taskId' can't be null !");
+        Tools.assert0(flow != null, "'flow' can't be null !");
+        Tools.assert0(state != null, "'state' can't be null !");
+        Tools.assert0(flowTaskFactory != null, "'flowTaskFactory' can't be null !");
+
         StateMachine<StateType, ActionType> stateMachine = flow2StatusMachine.get(flow);
         if (stateMachine == null) {
             return false;
@@ -210,6 +222,8 @@ public class GenericFlowEngine<StateType extends State, ActionType extends Actio
 
     @Override
     public boolean complete(String taskId, ActionType action, Object extra, Object taskFacadeAndTransferContextOthers) throws Exception {
+        Tools.assert0(taskId != null, "'taskId' can't be null !");
+
         FlowTask<StateType, ActionType> task = runningId2Task.get(taskId);
         if (task == null) {
             return false;
