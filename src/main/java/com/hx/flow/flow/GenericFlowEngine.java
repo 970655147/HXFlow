@@ -192,6 +192,10 @@ public class GenericFlowEngine<StateType extends State, ActionType extends Actio
 
         String taskId = taskIdGenerator.nextId();
         FlowTask<StateType, ActionType> task = flowTaskFactory.create(taskId, flow, stateMachine.initialState(), extra, taskOthers);
+        if(task == null) {
+            return null;
+        }
+
         addFlowInstance(task);
         return taskId;
     }
@@ -217,6 +221,10 @@ public class GenericFlowEngine<StateType extends State, ActionType extends Actio
         }
 
         FlowTask<StateType, ActionType> task = flowTaskFactory.create(taskId, flow, state, extra, taskOthers);
+        if(task == null) {
+            return false;
+        }
+
         return addFlowInstance(task);
     }
 
@@ -236,8 +244,11 @@ public class GenericFlowEngine<StateType extends State, ActionType extends Actio
             transferFinishedTask(task.id(), task);
             return false;
         }
-
         FlowTaskFacade<StateType, ActionType> taskFacade = taskFacadeFactory.create(task, taskFacadeAndTransferContextOthers);
+        if(taskFacade == null) {
+            return false;
+        }
+
         StateType srcState = task.now();
         StateType dstState = stateMachine.getState(srcState, action);
         TransferHandler<StateType, ActionType> handler = stateMachine.getHandler(srcState, action);
@@ -299,6 +310,9 @@ public class GenericFlowEngine<StateType extends State, ActionType extends Actio
             String dstStr = transferObj.getString(HXFlowConstants.TRANSFER_DST);
             String handlerStr = transferObj.getString(HXFlowConstants.TRANSFER_HANDLER);
             TransferHandler<StateType, ActionType> handler = transferHandlerFactory.create(handlerStr, transferHandlerOthers);
+            if(handler == null) {
+                Log.warn("got null handler with handlerStr : " + handlerStr + ", others : " + transferObj);
+            }
 
             State srcStat = state.idOf(srcStr);
             Action actionNow = action.idOf(actionStr);
