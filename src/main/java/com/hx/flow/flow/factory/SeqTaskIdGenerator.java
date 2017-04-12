@@ -1,7 +1,7 @@
 package com.hx.flow.flow.factory;
 
 import com.hx.flow.flow.interf.factory.TaskIdGenerator;
-import com.hx.log.util.IdxGenerator;
+import com.hx.log.idx.IdxGenerator;
 
 /**
  * file name : SeqTaskIdGenerator.java
