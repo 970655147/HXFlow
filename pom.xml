@@ -6,24 +6,23 @@
 
   <groupId>com.hx</groupId>
   <artifactId>HXFlow</artifactId>
-  <version>0.0.1</version>
+  <version>0.0.2</version>
   <packaging>jar</packaging>
 
-  <name>HelloFlow</name>
+  <name>HXFlow</name>
   <url>http://maven.apache.org</url>
 
   <properties>
     <project.build.sourceEncoding>GBK</project.build.sourceEncoding>
-    
-    <HXAttrHandler.version>0.0.1</HXAttrHandler.version>
-    <HXLog.version>0.0.1</HXLog.version>
+
+    <HXLog.version>0.0.2</HXLog.version>
   </properties>
 
   <dependencies>
       <dependency>
           <groupId>com.hx</groupId>
           <artifactId>HXAttrHandler</artifactId>
-          <version>${HXAttrHandler.version}</version>
+          <version>${HXLog.version}</version>
       </dependency>
       <dependency>
           <groupId>com.hx</groupId>
@@ -34,12 +33,6 @@
   </dependencies>
 
     <build>
-        <sourceDirectory>src/main/java</sourceDirectory>
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-            </resource>
-        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
