@@ -21,11 +21,6 @@
   <dependencies>
       <dependency>
           <groupId>com.hx</groupId>
-          <artifactId>HXAttrHandler</artifactId>
-          <version>${HXLog.version}</version>
-      </dependency>
-      <dependency>
-          <groupId>com.hx</groupId>
           <artifactId>HXLog</artifactId>
           <version>${HXLog.version}</version>
       </dependency>

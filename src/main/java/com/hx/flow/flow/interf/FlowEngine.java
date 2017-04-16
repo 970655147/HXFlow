@@ -3,7 +3,7 @@ package com.hx.flow.flow.interf;
 import com.hx.flow.flow.interf.factory.FlowTaskFactory;
 import com.hx.flow.flow.interf.factory.TransferHandlerFactory;
 import java.util.Set;
-import net.sf.json.JSONObject;
+import com.hx.json.JSONObject;
 
 /**
  * file name : FlowEngine.java
