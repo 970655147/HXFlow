@@ -53,7 +53,7 @@ public class Test01StateMachine {
         Map<String, StoreCreateState> id2Instance = new HashMap<>();
 
         private StoreCreateState() {
-            this.id = String.valueOf(idxGenerator.nextId());
+            this.id = String.valueOf(idxGenerator.next());
             id2Instance.put(this.id, this);
         }
 

@@ -1,11 +1,7 @@
 package com.hx.flow.test;
 
 import com.hx.flow.flow.*;
-import com.hx.flow.flow.factory.StandardFlowTaskFacadeFactory;
-import com.hx.flow.flow.factory.StandardFlowTaskFactory;
-import com.hx.flow.flow.factory.StandardTransferContextFactory;
 import com.hx.flow.flow.interf.*;
-import com.hx.flow.flow.interf.factory.FlowTaskFacadeFactory;
 import com.hx.flow.flow.interf.factory.TransferHandlerFactory;
 import java.util.HashMap;
 import java.util.Map;
@@ -83,7 +79,7 @@ public class Test02FlowEngine {
         Map<String, StoreCreateState> id2Instance = new HashMap<>();
 
         private StoreCreateState() {
-            this.id = String.valueOf(idxGenerator.nextId());
+            this.id = String.valueOf(idxGenerator.next());
             id2Instance.put(this.id, this);
         }
 

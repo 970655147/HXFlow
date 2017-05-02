@@ -17,7 +17,7 @@ public class SeqTaskIdGenerator implements TaskIdGenerator {
 
     @Override
     public String nextId() {
-        return taskId(taskIdGenerator.nextId());
+        return taskId(taskIdGenerator.next());
     }
 
     /**
