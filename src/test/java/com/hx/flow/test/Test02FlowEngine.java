@@ -71,16 +71,25 @@ public class Test02FlowEngine {
 
     }
 
+    /**
+     * idGenerator
+     */
+    private static IdxGenerator idxGenerator = new IdxGenerator();
+
     private static enum StoreCreateState implements State<StoreCreateState> {
         STATUS_APPLY, STATUS_RM_AUTH, STATUS_SUCCESS, STATUS_FAIL;
 
-        private String id;
-        private IdxGenerator idxGenerator = new IdxGenerator();
-        Map<String, StoreCreateState> id2Instance = new HashMap<>();
+        private static Map<String, StoreCreateState> id2Instance = new HashMap<>();
+        static {
+            for(StoreCreateState state : values()) {
+                id2Instance.put(state.id(), state);
+            }
+        }
 
-        private StoreCreateState() {
+        private String id;
+
+        StoreCreateState() {
             this.id = String.valueOf(idxGenerator.next());
-            id2Instance.put(this.id, this);
         }
 
 
