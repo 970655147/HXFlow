@@ -1,6 +1,5 @@
 package com.hx.flow.flow.interf;
 
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -33,6 +32,14 @@ public interface StateMachine<StateType extends State, ActionType extends Action
      * @author 970655147 created at 2017-03-22 22:34
      */
     List<ActionType> nextActions(StateType now);
+
+    /**
+     * 获取当前状态的下一个可能的状态
+     *
+     * @return return based on `now`, what actions can be apply
+     * @author 970655147 created at 2017-03-22 22:34
+     */
+    List<StateType> nextStates(StateType now);
 
     /**
      * 根据当前的状态 以及采取的动作获取下一个状态

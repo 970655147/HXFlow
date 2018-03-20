@@ -5,6 +5,7 @@ import com.hx.flow.flow.interf.State;
 import com.hx.flow.flow.interf.StateMachine;
 import com.hx.flow.flow.interf.TransferHandler;
 import com.hx.log.util.Tools;
+
 import java.util.*;
 
 /**
@@ -25,7 +26,7 @@ public class GenericStateMachine<StateType extends State, ActionType extends Act
     private Map<StateType, Map<ActionType, StateAndHandler<StateType, ActionType>>> stateAction2Handler;
 
     public GenericStateMachine(StateType initialState,
-                                Map<StateType, Map<ActionType, StateAndHandler<StateType, ActionType>>> stateAction2Handler) {
+                               Map<StateType, Map<ActionType, StateAndHandler<StateType, ActionType>>> stateAction2Handler) {
         Tools.assert0(stateAction2Handler != null, "'stateAction2Handler' can't be null !");
         this.initialState = initialState;
         this.stateAction2Handler = stateAction2Handler;
@@ -39,19 +40,33 @@ public class GenericStateMachine<StateType extends State, ActionType extends Act
     @Override
     public boolean hasNextState(StateType now) {
         Map<ActionType, StateAndHandler<StateType, ActionType>> action2Handler = stateAction2Handler.get(now);
-        return ((action2Handler == null) || (action2Handler.isEmpty()) );
+        return ((action2Handler == null) || (action2Handler.isEmpty()));
     }
 
     @Override
     public List<ActionType> nextActions(StateType now) {
         Map<ActionType, StateAndHandler<StateType, ActionType>> action2Handler = stateAction2Handler.get(now);
-        if((action2Handler == null) || (action2Handler.isEmpty()) ) {
+        if ((action2Handler == null) || (action2Handler.isEmpty())) {
             return Collections.emptyList();
         }
 
         List<ActionType> result = new ArrayList<>(action2Handler.size());
-        for(ActionType action : action2Handler.keySet()) {
+        for (ActionType action : action2Handler.keySet()) {
             result.add(action);
+        }
+        return result;
+    }
+
+    @Override
+    public List<StateType> nextStates(StateType now) {
+        Map<ActionType, StateAndHandler<StateType, ActionType>> action2Handler = stateAction2Handler.get(now);
+        if ((action2Handler == null) || (action2Handler.isEmpty())) {
+            return Collections.emptyList();
+        }
+
+        List<StateType> result = new ArrayList<>(action2Handler.size());
+        for (ActionType action : action2Handler.keySet()) {
+            result.add(getState(now, action));
         }
         return result;
     }

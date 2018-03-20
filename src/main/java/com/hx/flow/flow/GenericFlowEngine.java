@@ -4,13 +4,15 @@ import com.hx.flow.flow.factory.SeqTaskIdGenerator;
 import com.hx.flow.flow.interf.*;
 import com.hx.flow.flow.interf.factory.*;
 import com.hx.flow.util.HXFlowConstants;
-import com.hx.log.json.JSONUtils;
-import com.hx.log.util.Log;
-import com.hx.log.util.Tools;
-import java.io.File;
-import java.util.*;
 import com.hx.json.JSONArray;
 import com.hx.json.JSONObject;
+import com.hx.log.json.JSONUtils;
+import com.hx.log.json.interf.CheckRequiredAttributeFunc;
+import com.hx.log.util.Log;
+import com.hx.log.util.Tools;
+
+import java.io.File;
+import java.util.*;
 
 /**
  * file name : GenericFlowEngine.java
@@ -53,7 +55,7 @@ public class GenericFlowEngine<StateType extends State, ActionType extends Actio
     public GenericFlowEngine(FlowTaskFactory<StateType, ActionType> taskFactory,
                              FlowTaskFacadeFactory<StateType, ActionType> taskFacadeFactory,
                              TransferContextFactory<StateType, ActionType> transferContextFactory) {
-        this(taskFactory, taskFacadeFactory, transferContextFactory, new HashMap<String, StateMachine<StateType, ActionType>>() );
+        this(taskFactory, taskFacadeFactory, transferContextFactory, new HashMap<String, StateMachine<StateType, ActionType>>());
     }
 
     public GenericFlowEngine(FlowTaskFactory<StateType, ActionType> taskFactory,
@@ -192,7 +194,7 @@ public class GenericFlowEngine<StateType extends State, ActionType extends Actio
 
         String taskId = taskIdGenerator.nextId();
         FlowTask<StateType, ActionType> task = flowTaskFactory.create(taskId, flow, stateMachine.initialState(), extra, taskOthers);
-        if(task == null) {
+        if (task == null) {
             return null;
         }
 
@@ -221,7 +223,7 @@ public class GenericFlowEngine<StateType extends State, ActionType extends Actio
         }
 
         FlowTask<StateType, ActionType> task = flowTaskFactory.create(taskId, flow, state, extra, taskOthers);
-        if(task == null) {
+        if (task == null) {
             return false;
         }
 
@@ -245,7 +247,7 @@ public class GenericFlowEngine<StateType extends State, ActionType extends Actio
             return false;
         }
         FlowTaskFacade<StateType, ActionType> taskFacade = taskFacadeFactory.create(task, taskFacadeAndTransferContextOthers);
-        if(taskFacade == null) {
+        if (taskFacade == null) {
             return false;
         }
 
@@ -259,7 +261,7 @@ public class GenericFlowEngine<StateType extends State, ActionType extends Actio
         TransferContext<StateType, ActionType> context = transferContextFactory.create(stateMachine, taskFacade,
                 srcState, action, dstState, handler, extra, taskFacadeAndTransferContextOthers);
         boolean handleResult = handler.handle(context);
-        if(handleResult) {
+        if (handleResult) {
             task.transfer(dstState);
             if (stateMachine.hasNextState(dstState)) {
                 transferFinishedTask(taskId, task);
@@ -299,8 +301,8 @@ public class GenericFlowEngine<StateType extends State, ActionType extends Actio
      * @author 970655147 created at 2017-03-19 19:19
      */
     private StateMachine<StateType, ActionType> buildStateMachine(JSONObject flowGraph, StateType state, ActionType action,
-                                                          TransferHandlerFactory<StateType, ActionType> transferHandlerFactory,
-                                                          Object transferHandlerOthers) {
+                                                                  TransferHandlerFactory<StateType, ActionType> transferHandlerFactory,
+                                                                  Object transferHandlerOthers) {
         JSONArray transfers = flowGraph.getJSONArray(HXFlowConstants.TRANSFERS);
         StandardStateMachine.TransferMapBuilder<StateType, ActionType> builder = StandardStateMachine.TransferMapBuilder.start();
         for (int i = 0, len = transfers.size(); i < len; i++) {
@@ -310,7 +312,7 @@ public class GenericFlowEngine<StateType extends State, ActionType extends Actio
             String dstStr = transferObj.getString(HXFlowConstants.TRANSFER_DST);
             String handlerStr = transferObj.getString(HXFlowConstants.TRANSFER_HANDLER);
             TransferHandler<StateType, ActionType> handler = transferHandlerFactory.create(handlerStr, transferHandlerOthers);
-            if(handler == null) {
+            if (handler == null) {
                 Log.warn("got null handler with handlerStr : " + handlerStr + ", others : " + transferObj);
             }
 
@@ -371,7 +373,7 @@ public class GenericFlowEngine<StateType extends State, ActionType extends Actio
     /**
      * 向flowEngine中增加一个流程实例
      *
-     * @param task                   给定的任务的需要添加的任务
+     * @param task 给定的任务的需要添加的任务
      * @return boolean return true if add flowInstance success
      * @author 970655147 created at 2017-03-22 23:39
      */
@@ -387,7 +389,7 @@ public class GenericFlowEngine<StateType extends State, ActionType extends Actio
      *
      * @author 970655147 created at 2017-03-19 19:01
      */
-    private static class CheckDeployAttributeFunc implements JSONUtils.CheckRequiredAttributeFunc {
+    private static class CheckDeployAttributeFunc implements CheckRequiredAttributeFunc {
         @Override
         public boolean check(JSONObject obj, String attr) {
             Collection<String> requiredAttrs = null;
